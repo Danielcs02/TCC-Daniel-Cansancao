@@ -11,7 +11,7 @@ import pandas as pd
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
 from tcc import config
-from tcc.fontes import cnes, ibge, inep, sidra
+from tcc.fontes import anatel, cnes, ibge, inep, sidra
 from tcc.fontes.download import baixar
 
 GRUPO = "extracao"
@@ -115,4 +115,20 @@ def padronizado_cnes(context: AssetExecutionContext) -> MaterializeResult:
         "medicos_municipio": int(sum(s.sum() for s in medicos)),
         "arquivo": _gravar(fato, "fato_cnes.csv"),
         "fontes": MetadataValue.json(urls),
+    })
+
+
+@asset(group_name=GRUPO, deps=[padronizado_dim_municipio],
+       description="Anatel, IBC de 2022: C1 -> fato_anatel.csv")
+def padronizado_anatel(context: AssetExecutionContext) -> MaterializeResult:
+    caminho = config.dir_bruto("anatel") / anatel.ARQUIVO_ZIP
+    if not caminho.exists():
+        raise FileNotFoundError(
+            f"Arquivo do IBC ausente: {caminho}. Baixe-o em {anatel.PAGINA} "
+            "(ver docs/fontes.md) e grave-o com esse nome.")
+    fato = anatel.calcular_c1(anatel.ler_zip(caminho), config.escopo_uf())
+    context.log.info(f"IBC 2022: {len(fato)} municípios")
+    return MaterializeResult(metadata={
+        "municipios": len(fato),
+        "arquivo": _gravar(fato, "fato_anatel.csv"),
     })

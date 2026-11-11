@@ -11,7 +11,8 @@ def test_definicoes_carregam():
     nomes = {k.to_user_string() for a in definitions.ATIVOS for k in a.keys}
     assert {"fato_indicador_municipal", "iis", "sensibilidade", "quadrantes",
             "padronizado_dim_municipio", "padronizado_censo",
-            "padronizado_inep", "padronizado_cnes"} <= nomes
+            "padronizado_inep", "padronizado_cnes",
+            "padronizado_anatel"} <= nomes
 
 
 def test_pipeline_ponta_a_ponta(tmp_path, monkeypatch, largo):

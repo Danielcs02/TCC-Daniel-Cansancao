@@ -4,7 +4,7 @@ Todas as fontes são públicas e se referem a 2022, ano do Censo Demográfico. A
 
 | Código | Indicador | Fonte | Referência | Chave municipal | Status |
 |---|---|---|---|---|---|
-| C1 | Índice Brasileiro de Conectividade (IBC) | Anatel | dez. 2022 | 7 dígitos | confirmar disponibilidade da edição 2022 para download |
+| C1 | Índice Brasileiro de Conectividade (IBC) | Anatel | 2022 | 7 dígitos | extraído (série 2021 a 2025, ano 2022) |
 | C2 | Moradores em domicílios com acesso à Internet (%) | IBGE, Censo 2022 (amostra) | 2022 | 7 dígitos | extraído (SIDRA 9942) |
 | S1 | Moradores em domicílios abastecidos por rede geral de água (%) | IBGE, Censo 2022 (universo) | 2022 | 7 dígitos | extraído (SIDRA 6894) |
 | S2 | Moradores em domicílios com esgotamento por rede geral, pluvial ou fossa séptica ligada à rede (%) | IBGE, Censo 2022 (universo) | 2022 | 7 dígitos | extraído (SIDRA 7555) |
@@ -78,6 +78,27 @@ Observações:
 
 **Conferência.** H1 conferido contra o TabNet (CNES, Estabelecimentos por Tipo, Rio de Janeiro, Dez/2022, tipos "posto de saúde" e "centro de saúde/unidade básica", por município): as contagens coincidem nos 92 municípios (2.175 no estado; 307 no município do Rio de Janeiro; 9 em Sumidouro). H2 ainda não foi conferido contra o TabNet. Valores: Rio de Janeiro, H1 0,49 e H2 4,79; Sumidouro, H1 5,92 e H2 2,89.
 
+## Arquivo do IBC usado
+
+Arquivo .zip do conjunto "Meu Município: Índice Brasileiro de Conectividade" do Portal Brasileiro de Dados Abertos (https://dados.gov.br/dados/conjuntos-dados/meu-municipio---indice-brasileiro-de-conectividade), baixado manualmente (a página só funciona em navegador e a API do portal exige login) e gravado como `data/bruto/anatel/ibc.zip`. Obtido em 11/11/2026; arquivos internos datados de 23/04/2026 (edição IBC 2025). SHA-256 do .zip: `c7dfe5253357d1179a2f8ce907c8f0e7cd5c1bbcce59eeee6741326198ba1752`. O código está em `src/tcc/fontes/anatel.py`.
+
+| Uso | Arquivo interno | Coluna | Filtro |
+|---|---|---|---|
+| C1 | `IBC_municipios_indicadores_normalizados.csv` | `IBC` (0 a 100) | `Ano` = 2022 |
+
+O .zip traz também os indicadores originais (não normalizados) e as tabelas por UF. A série tem 5.570 municípios em cada ano de 2021 a 2025.
+
+**Metodologia do IBC de 2022.** A série mistura duas versões do índice, o que foi verificado nos próprios dados:
+
+- **2021 a 2023, metodologia original:** os componentes são normalizados pelo mínimo e pelo máximo do próprio ano (diferença máxima de 0,02 ponto ao refazer a conta a partir dos valores originais) e não há componente rural (coluna vazia). Os pesos recuperados por regressão dos componentes sobre o IBC (resíduo máximo de 0,06 ponto) são: fibra 0,20; densidade de banda larga fixa 0,19; densidade móvel 0,19; cobertura 4G/5G 0,17; adensamento de estações 0,13; competitividade móvel 0,06; competitividade fixa 0,06.
+- **2024 e 2025, metodologia revisada:** limites teóricos fixos na normalização e componente de conectividade rural, com os pesos da página de metodologia da Anatel.
+
+Consequência para o trabalho: o C1 de 2022 segue a metodologia original. Como a normalização é feita dentro do próprio ano, o IBC de 2022 ordena os municípios entre si em 2022, que é o uso feito aqui (correlação de Spearman e quadrantes pela mediana); ele não deve ser comparado em nível com edições de 2024 em diante. O texto do artigo deve registrar isso.
+
+**Mês de referência.** O arquivo informa só o ano (2022). O artigo cita dados de dezembro de 2022; isso ainda precisa ser confirmado na documentação da Anatel.
+
+**Conferência.** A Anatel divulgou que Armação dos Búzios (RJ) teve o maior IBC do país em 2022 e em 2023 (https://www.gov.br/anatel/pt-br/assuntos/noticias/regioes-norte-e-centro-oeste-tem-os-maiores-aumentos-de-conectividade-em-2023). No arquivo, Armação dos Búzios (3300233) é o primeiro em 2022 (83,28) e em 2023 (81,94). Rio de Janeiro (3304557): 71,96; Sumidouro (3305703): 65,82.
+
 ## Onde encontrar
 
 - **SIDRA, Censo Demográfico 2022**: https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2022/inicial
@@ -86,7 +107,7 @@ Observações:
 - **CNES**: https://cnes.datasus.gov.br/
 - **Inep, Indicadores Educacionais**: https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais
 - **Malha municipal do IBGE**: https://www.ibge.gov.br/geociencias/organizacao-do-territorio/malhas-territoriais/15774-malhas.html
-- **IBC (Anatel)**: metodologia em https://www.gov.br/anatel/pt-br/regulado/universalizacao/indice-brasileiro-conectiviadade-ibc e painel em https://informacoes.anatel.gov.br/paineis/meu-municipio/indice-brasileiro-de-conectividade. Arquivo de dados abertos por município ainda não localizado. A metodologia foi revisada em 2024 (limites teóricos fixos na normalização e inclusão da conectividade rural); falta saber se os valores de 2022 disponíveis seguem a metodologia original ou foram recalculados.
+- **IBC (Anatel)**: dados em https://dados.gov.br/dados/conjuntos-dados/meu-municipio---indice-brasileiro-de-conectividade; metodologia em https://www.gov.br/anatel/pt-br/regulado/universalizacao/indice-brasileiro-conectiviadade-ibc; painel em https://informacoes.anatel.gov.br/paineis/meu-municipio/indice-brasileiro-de-conectividade.
 
 ## Fontes consideradas e não usadas
 

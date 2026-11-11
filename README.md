@@ -52,7 +52,7 @@ src/tcc/
   indice.py       normalização, IIS, análise de sensibilidade e quadrantes
   config.py       pasta de dados e UF a extrair (variáveis de ambiente)
   extracao.py     ativos da camada bruta (baixam as fontes e geram a camada padronizada)
-  fontes/         um módulo por fonte oficial (SIDRA/IBGE, Inep, CNES)
+  fontes/         um módulo por fonte oficial (SIDRA/IBGE, Inep, CNES, Anatel)
   definitions.py  ativos e dependências do Dagster
 sql/              esquema do banco (modelo dimensional)
 docs/             fontes, decisões metodológicas e modelo de dados
@@ -88,7 +88,7 @@ dagster dev
 - [x] Catálogo de indicadores, esquema do banco e decisões metodológicas
 - [x] Módulo do índice (normalização, agregação, sensibilidade, quadrantes) com testes
 - [x] Regras de qualidade e padronização da chave municipal com testes
-- [ ] Prova de conceito: extração das quatro fontes para os 92 municípios do RJ
+- [x] Prova de conceito: extração das quatro fontes para os 92 municípios do RJ
 - [ ] Carga no PostgreSQL
 - [ ] Execução nacional (5.570 municípios)
 - [ ] Painel em Streamlit
