@@ -10,8 +10,8 @@ Todas as fontes são públicas e se referem a 2022, ano do Censo Demográfico. A
 | S2 | Moradores em domicílios com esgotamento por rede geral, pluvial ou fossa séptica ligada à rede (%) | IBGE, Censo 2022 (universo) | 2022 | 7 dígitos | extraído (SIDRA 7555) |
 | H1 | Unidades básicas de saúde por 10 mil habitantes | CNES (DATASUS) | competência dez. 2022 | 6 dígitos | a extrair |
 | H2 | Médicos com vínculo ativo por mil habitantes | CNES (DATASUS) | competência dez. 2022 | 6 dígitos | a extrair |
-| E1 | Taxa de distorção idade-série no ensino fundamental (%) | Inep, Indicadores Educacionais | 2022 | 7 dígitos | a extrair |
-| E2 | Docentes do ensino fundamental com formação adequada (%) | Inep, Indicadores Educacionais | 2022 | 7 dígitos | a extrair |
+| E1 | Taxa de distorção idade-série no ensino fundamental (%) | Inep, Indicadores Educacionais | 2022 | 7 dígitos | extraído (TDI 2022) |
+| E2 | Docentes do ensino fundamental com formação adequada (%) | Inep, Indicadores Educacionais | 2022 | 7 dígitos | extraído (AFD 2022) |
 
 Apoio: população do Censo 2022 (denominador de H1 e H2; SIDRA 4714, extraída) e malha municipal digital do IBGE (mapas do painel).
 
@@ -37,6 +37,25 @@ Observações:
 
 **Conferência.** Os percentuais são calculados a partir das contagens de moradores e comparados, município a município, com o percentual publicado pelo próprio IBGE na mesma tabela (variável 1000382); diferenças acima de 0,01 ponto percentual interrompem o pipeline. Valores conferidos (Brasil): S1 82,89%, S2 62,51%, C2 89,36%. Rio de Janeiro (3304557): S1 98,25%, S2 94,55%, C2 92,29%; população 6.211.223. População do estado do RJ: 16.055.174.
 
+## Arquivos do Inep usados
+
+Planilhas municipais dos Indicadores Educacionais de 2022, baixadas manualmente da página do Inep (o servidor de download não respondeu ao acesso automatizado) e colocadas em `data/bruto/inep/`. Obtidas em 11/11/2026. O código está em `src/tcc/fontes/inep.py`.
+
+| Uso | Arquivo | Coluna | Linha usada | SHA-256 do .zip |
+|---|---|---|---|---|
+| E1 | `TDI_2022_MUNICIPIOS.zip` (Taxa de Distorção Idade-Série) | `FUN_CAT_0` (ensino fundamental, total) | localização Total, dependência Total | `30ca963d8accdcd7a3715e996e00720e872731d1e08491253d48304c6f263f0b` |
+| E2 | `AFD_2022_MUNICIPIOS.zip` (Adequação da Formação Docente) | `FUN_CAT_1` (ensino fundamental, total, grupo 1) | localização Total, dependência Total | `ef56287e590d9e7e9b5bf3762f0bf596422b62b9bd0d6f31a66518c880503032` |
+
+Páginas: https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/taxas-de-distorcao-idade-serie e https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/adequacao-da-formacao-docente. O link direto de cada arquivo ainda não foi registrado.
+
+Observações:
+
+- **Integridade.** Cada .zip traz o MD5 da planilha calculado pelo Inep; o pipeline confere antes de ler.
+- **Cobertura.** As duas planilhas têm os 5.570 municípios, todos com valor na linha Total/Total do ensino fundamental.
+- **E2 é percentual de docências.** Pela nota da planilha, o docente é contado uma vez em cada turma e disciplina que leciona, e o grupo 1 reúne docentes com licenciatura (ou bacharelado com complementação pedagógica) na mesma área da disciplina. O texto do artigo deve descrever o indicador assim. Nota técnica citada na planilha: https://download.inep.gov.br/informacoes_estatisticas/indicadores_educacionais/2021/SEI_INEP_0644683_Nota_Tecnica.pdf
+
+**Conferência.** Rio de Janeiro (3304557): E1 11,0%, E2 62,0%. Sumidouro (3305703): E1 23,0%, E2 36,8%.
+
 ## Onde encontrar
 
 - **SIDRA, Censo Demográfico 2022**: https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2022/inicial
@@ -45,7 +64,7 @@ Observações:
 - **CNES**: https://cnes.datasus.gov.br/
 - **Inep, Indicadores Educacionais**: https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais
 - **Malha municipal do IBGE**: https://www.ibge.gov.br/geociencias/organizacao-do-territorio/malhas-territoriais/15774-malhas.html
-- **IBC (Anatel)**: link a registrar quando a base for baixada.
+- **IBC (Anatel)**: metodologia em https://www.gov.br/anatel/pt-br/regulado/universalizacao/indice-brasileiro-conectiviadade-ibc e painel em https://informacoes.anatel.gov.br/paineis/meu-municipio/indice-brasileiro-de-conectividade. Arquivo de dados abertos por município ainda não localizado. A metodologia foi revisada em 2024 (limites teóricos fixos na normalização e inclusão da conectividade rural); falta saber se os valores de 2022 disponíveis seguem a metodologia original ou foram recalculados.
 
 ## Fontes consideradas e não usadas
 

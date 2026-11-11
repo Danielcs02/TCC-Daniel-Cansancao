@@ -11,7 +11,7 @@ import pandas as pd
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
 from tcc import config
-from tcc.fontes import ibge, sidra
+from tcc.fontes import ibge, inep, sidra
 from tcc.fontes.download import baixar
 
 GRUPO = "extracao"
@@ -70,4 +70,25 @@ def padronizado_censo(context: AssetExecutionContext) -> MaterializeResult:
         "municipios_por_indicador": MetadataValue.json(contagem),
         "arquivo": _gravar(fato, "fato_censo.csv"),
         "fontes": MetadataValue.json(urls),
+    })
+
+
+@asset(group_name=GRUPO, deps=[padronizado_dim_municipio],
+       description="Inep, Indicadores Educacionais 2022: E1 e E2 -> fato_inep.csv")
+def padronizado_inep(context: AssetExecutionContext) -> MaterializeResult:
+    pasta = config.dir_bruto("inep")
+    faltando = [f"{i.arquivo}.zip" for i in inep.INDICADORES_INEP
+                if not (pasta / f"{i.arquivo}.zip").exists()]
+    if faltando:
+        raise FileNotFoundError(
+            f"Arquivos do Inep ausentes em {pasta}: {faltando}. Baixe-os em {inep.PAGINA} "
+            "(ver docs/fontes.md) e coloque-os nessa pasta.")
+    uf = config.escopo_uf()
+    fato = pd.concat([inep.calcular_indicador(i, inep.ler_zip(pasta / f"{i.arquivo}.zip"), uf)
+                      for i in inep.INDICADORES_INEP], ignore_index=True)
+    contagem = fato.groupby("codigo_indicador").size().to_dict()
+    context.log.info(f"Municípios por indicador: {contagem}")
+    return MaterializeResult(metadata={
+        "municipios_por_indicador": MetadataValue.json(contagem),
+        "arquivo": _gravar(fato, "fato_inep.csv"),
     })

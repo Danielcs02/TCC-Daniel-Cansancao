@@ -10,7 +10,8 @@ from tcc import definitions
 def test_definicoes_carregam():
     nomes = {k.to_user_string() for a in definitions.ATIVOS for k in a.keys}
     assert {"fato_indicador_municipal", "iis", "sensibilidade", "quadrantes",
-            "padronizado_dim_municipio", "padronizado_censo"} <= nomes
+            "padronizado_dim_municipio", "padronizado_censo",
+            "padronizado_inep"} <= nomes
 
 
 def test_pipeline_ponta_a_ponta(tmp_path, monkeypatch, largo):
