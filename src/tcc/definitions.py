@@ -7,30 +7,27 @@ Fluxo atual (camadas padronizada e analítica):
     fato_indicador_municipal -> indicadores_largo -> iis -> quadrantes
     indicadores_largo -> sensibilidade
 
-Os ativos da camada bruta, que baixam e padronizam cada fonte oficial, entram na
-prova de conceito. Até lá, os arquivos padronizados são lidos de
-``data/padronizado`` (ver ``data/README.md`` para o formato esperado).
+Os ativos da camada bruta (grupo ``extracao``, em ``tcc.extracao``) baixam cada
+fonte oficial e geram os arquivos de ``data/padronizado`` (formato em
+``data/README.md``), que os ativos abaixo leem:
+
+    padronizado_dim_municipio -> dim_municipio
+    padronizado_censo -> fato_indicador_municipal
 
 Execute com ``dagster dev`` na raiz do repositório.
 """
 
-import os
-from pathlib import Path
-
 import pandas as pd
-from dagster import AssetExecutionContext, Definitions, MetadataValue, asset, load_assets_from_current_module
+from dagster import (AssetExecutionContext, Definitions, MetadataValue, asset,
+                     load_assets_from_current_module, load_assets_from_modules)
 
-from tcc import catalogo, indice, municipio, qualidade
+from tcc import catalogo, config, extracao, indice, municipio, qualidade
 
 GRUPO = "tcc"
 
 
-def _dir_padronizado() -> Path:
-    return Path(os.getenv("TCC_DATA_DIR", "data")) / "padronizado"
-
-
 def _ler_csv(nome: str) -> pd.DataFrame:
-    caminho = _dir_padronizado() / nome
+    caminho = config.dir_padronizado() / nome
     if not caminho.exists():
         raise FileNotFoundError(
             f"Arquivo {caminho} não encontrado. Veja data/README.md para o formato esperado."
@@ -43,7 +40,8 @@ def dim_indicador() -> pd.DataFrame:
     return catalogo.como_dataframe()
 
 
-@asset(group_name=GRUPO, description="Dimensão de município, com faixa de porte populacional.")
+@asset(group_name=GRUPO, deps=[extracao.padronizado_dim_municipio],
+       description="Dimensão de município, com faixa de porte populacional.")
 def dim_municipio(context: AssetExecutionContext) -> pd.DataFrame:
     df = _ler_csv("dim_municipio.csv")
     df["porte"] = municipio.faixa_porte(df["populacao"])
@@ -51,10 +49,11 @@ def dim_municipio(context: AssetExecutionContext) -> pd.DataFrame:
     return df
 
 
-@asset(group_name=GRUPO, description="Tabela de fatos no formato longo, validada.")
+@asset(group_name=GRUPO, deps=[extracao.padronizado_censo],
+       description="Tabela de fatos no formato longo, validada.")
 def fato_indicador_municipal(context: AssetExecutionContext, dim_municipio: pd.DataFrame,
                              dim_indicador: pd.DataFrame) -> pd.DataFrame:
-    arquivos = sorted(_dir_padronizado().glob("fato_*.csv"))
+    arquivos = sorted(config.dir_padronizado().glob("fato_*.csv"))
     if not arquivos:
         raise FileNotFoundError("Nenhum arquivo fato_*.csv em data/padronizado.")
     fato = pd.concat([pd.read_csv(a, dtype={"codigo_municipio": str}) for a in arquivos],
@@ -107,6 +106,6 @@ def quadrantes(indicadores_largo: pd.DataFrame, iis: pd.DataFrame) -> pd.DataFra
     })
 
 
-ATIVOS = load_assets_from_current_module()
+ATIVOS = [*load_assets_from_current_module(), *load_assets_from_modules([extracao])]
 
 defs = Definitions(assets=ATIVOS)

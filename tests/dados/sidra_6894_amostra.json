@@ -1,0 +1,334 @@
+[
+ {
+  "id": "382",
+  "variavel": "Moradores em domicílios particulares permanentes ocupados",
+  "unidade": "Pessoas",
+  "resultados": [
+   {
+    "classificacoes": [
+     {
+      "id": "1821",
+      "nome": "Existência de ligação à rede geral de distribuição de água e principal forma de abastecimento de água",
+      "categoria": {
+       "72129": "Total"
+      }
+     },
+     {
+      "id": "58",
+      "nome": "Grupo de idade",
+      "categoria": {
+       "95253": "Total"
+      }
+     },
+     {
+      "id": "86",
+      "nome": "Cor ou raça",
+      "categoria": {
+       "95251": "Total"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "3304557",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Rio de Janeiro - RJ"
+      },
+      "serie": {
+       "2022": "6174549"
+      }
+     },
+     {
+      "localidade": {
+       "id": "3305703",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Sumidouro - RJ"
+      },
+      "serie": {
+       "2022": "15195"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": "1821",
+      "nome": "Existência de ligação à rede geral de distribuição de água e principal forma de abastecimento de água",
+      "categoria": {
+       "72144": "Possui ligação à rede geral e a utiliza como forma principal"
+      }
+     },
+     {
+      "id": "58",
+      "nome": "Grupo de idade",
+      "categoria": {
+       "95253": "Total"
+      }
+     },
+     {
+      "id": "86",
+      "nome": "Cor ou raça",
+      "categoria": {
+       "95251": "Total"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "3304557",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Rio de Janeiro - RJ"
+      },
+      "serie": {
+       "2022": "6066681"
+      }
+     },
+     {
+      "localidade": {
+       "id": "3305703",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Sumidouro - RJ"
+      },
+      "serie": {
+       "2022": "3908"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": "1821",
+      "nome": "Existência de ligação à rede geral de distribuição de água e principal forma de abastecimento de água",
+      "categoria": {
+       "72145": "Possui ligação à rede geral, mas utiliza principalmente outra forma"
+      }
+     },
+     {
+      "id": "58",
+      "nome": "Grupo de idade",
+      "categoria": {
+       "95253": "Total"
+      }
+     },
+     {
+      "id": "86",
+      "nome": "Cor ou raça",
+      "categoria": {
+       "95251": "Total"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "3304557",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Rio de Janeiro - RJ"
+      },
+      "serie": {
+       "2022": "42586"
+      }
+     },
+     {
+      "localidade": {
+       "id": "3305703",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Sumidouro - RJ"
+      },
+      "serie": {
+       "2022": "680"
+      }
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "1000382",
+  "variavel": "Moradores em domicílios particulares permanentes ocupados - percentual do total geral",
+  "unidade": "Percentual",
+  "resultados": [
+   {
+    "classificacoes": [
+     {
+      "id": "1821",
+      "nome": "Existência de ligação à rede geral de distribuição de água e principal forma de abastecimento de água",
+      "categoria": {
+       "72129": "Total"
+      }
+     },
+     {
+      "id": "58",
+      "nome": "Grupo de idade",
+      "categoria": {
+       "95253": "Total"
+      }
+     },
+     {
+      "id": "86",
+      "nome": "Cor ou raça",
+      "categoria": {
+       "95251": "Total"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "3304557",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Rio de Janeiro - RJ"
+      },
+      "serie": {
+       "2022": "100.00"
+      }
+     },
+     {
+      "localidade": {
+       "id": "3305703",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Sumidouro - RJ"
+      },
+      "serie": {
+       "2022": "100.00"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": "1821",
+      "nome": "Existência de ligação à rede geral de distribuição de água e principal forma de abastecimento de água",
+      "categoria": {
+       "72144": "Possui ligação à rede geral e a utiliza como forma principal"
+      }
+     },
+     {
+      "id": "58",
+      "nome": "Grupo de idade",
+      "categoria": {
+       "95253": "Total"
+      }
+     },
+     {
+      "id": "86",
+      "nome": "Cor ou raça",
+      "categoria": {
+       "95251": "Total"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "3304557",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Rio de Janeiro - RJ"
+      },
+      "serie": {
+       "2022": "98.25"
+      }
+     },
+     {
+      "localidade": {
+       "id": "3305703",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Sumidouro - RJ"
+      },
+      "serie": {
+       "2022": "25.72"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": "1821",
+      "nome": "Existência de ligação à rede geral de distribuição de água e principal forma de abastecimento de água",
+      "categoria": {
+       "72145": "Possui ligação à rede geral, mas utiliza principalmente outra forma"
+      }
+     },
+     {
+      "id": "58",
+      "nome": "Grupo de idade",
+      "categoria": {
+       "95253": "Total"
+      }
+     },
+     {
+      "id": "86",
+      "nome": "Cor ou raça",
+      "categoria": {
+       "95251": "Total"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "3304557",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Rio de Janeiro - RJ"
+      },
+      "serie": {
+       "2022": "0.69"
+      }
+     },
+     {
+      "localidade": {
+       "id": "3305703",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Sumidouro - RJ"
+      },
+      "serie": {
+       "2022": "4.48"
+      }
+     }
+    ]
+   }
+  ]
+ }
+]

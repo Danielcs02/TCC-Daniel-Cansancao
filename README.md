@@ -50,6 +50,9 @@ src/tcc/
   municipio.py    padronização do código IBGE (6 para 7 dígitos) e faixas de porte
   qualidade.py    regras de qualidade da tabela de fatos (Pandera)
   indice.py       normalização, IIS, análise de sensibilidade e quadrantes
+  config.py       pasta de dados e UF a extrair (variáveis de ambiente)
+  extracao.py     ativos da camada bruta (baixam as fontes e geram a camada padronizada)
+  fontes/         um módulo por fonte oficial (SIDRA/IBGE, ...)
   definitions.py  ativos e dependências do Dagster
 sql/              esquema do banco (modelo dimensional)
 docs/             fontes, decisões metodológicas e modelo de dados
