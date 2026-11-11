@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tcc-conectividade"
+version = "0.1.0"
+description = "Integração de dados abertos para análise comparativa entre conectividade e infraestrutura social nos municípios brasileiros"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "Daniel Cansanção da Silva" }]
+dependencies = [
+    "dagster>=1.9",
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "scipy>=1.12",
+    "pandera>=0.24",
+    "sqlalchemy>=2.0",
+    "psycopg[binary]>=3.1",
+]
+
+[project.optional-dependencies]
+painel = ["streamlit>=1.35", "plotly>=5.20", "geopandas>=0.14"]
+dev = ["pytest>=8.0", "dagster-webserver>=1.9"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.dagster]
+module_name = "tcc.definitions"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
