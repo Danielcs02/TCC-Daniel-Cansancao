@@ -77,3 +77,10 @@ def test_ano_diferente_de_2022_falha():
     df["NU_ANO_CENSO"] = "2021"
     with pytest.raises(ValueError, match="ano"):
         inep.calcular_indicador(TDI, df)
+
+
+def test_links_diretos():
+    # links registrados a partir do download feito no navegador (docs/fontes.md)
+    base = "https://download.inep.gov.br/informacoes_estatisticas/indicadores_educacionais/2022"
+    assert inep.url_arquivo(TDI) == f"{base}/TDI_2022_MUNICIPIOS.zip"
+    assert inep.url_arquivo(AFD) == f"{base}/AFD_2022_MUNICIPIOS.zip"

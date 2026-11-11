@@ -1,8 +1,10 @@
 """Anatel, Índice Brasileiro de Conectividade (IBC): C1.
 
 Arquivo usado: o .zip do conjunto "Meu Município: Índice Brasileiro de
-Conectividade" do Portal Brasileiro de Dados Abertos, baixado manualmente e
-gravado em ``data/bruto/anatel/ibc.zip`` (ver ``docs/fontes.md``). Ele traz a
+Conectividade" do Portal Brasileiro de Dados Abertos, gravado em
+``data/bruto/anatel/ibc.zip`` (link direto em ``URL``; ver ``docs/fontes.md``).
+A Anatel substitui esse arquivo a cada edição; o arquivo já gravado não é
+baixado de novo, e o SHA-256 da versão usada fica registrado. Ele traz a
 série 2021 a 2025 por município, em ``IBC_municipios_indicadores_normalizados.csv``
 (separador ponto e vírgula, vírgula decimal, UTF-8 com BOM).
 
@@ -23,6 +25,7 @@ from tcc import catalogo
 
 PAGINA = ("https://dados.gov.br/dados/conjuntos-dados/"
           "meu-municipio---indice-brasileiro-de-conectividade")
+URL = "https://www.anatel.gov.br/dadosabertos/paineis_de_dados/meu_municipio/ibc.zip"
 ARQUIVO_ZIP = "ibc.zip"
 ARQUIVO_CSV = "IBC_municipios_indicadores_normalizados.csv"
 

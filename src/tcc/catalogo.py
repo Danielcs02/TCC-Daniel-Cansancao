@@ -35,7 +35,7 @@ class Indicador:
 
 INDICADORES: tuple[Indicador, ...] = (
     Indicador("C1", "Índice Brasileiro de Conectividade (IBC)", "conectividade",
-              "Anatel", "dez. 2022", "pontos (0 a 100)", 1, False),
+              "Anatel", "edição 2022", "pontos (0 a 100)", 1, False),
     Indicador("C2", "Moradores em domicílios com acesso à Internet", "conectividade",
               "IBGE, Censo 2022 (amostra)", "2022", "%", 1, False),
     Indicador("S1", "Moradores em domicílios abastecidos por rede geral de água", "saneamento",

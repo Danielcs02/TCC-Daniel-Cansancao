@@ -63,3 +63,9 @@ def test_municipio_repetido_falha(tmp_path):
     dup = pd.concat([df, df[(df["Ano"] == 2022)].head(1)])
     with pytest.raises(ValueError, match="repetido"):
         anatel.calcular_c1(dup)
+
+
+def test_link_direto():
+    assert anatel.URL == ("https://www.anatel.gov.br/dadosabertos/paineis_de_dados/"
+                          "meu_municipio/ibc.zip")
+    assert anatel.URL.endswith("/" + anatel.ARQUIVO_ZIP)

@@ -22,7 +22,7 @@ Em que medida o nível de conectividade dos municípios brasileiros acompanha a 
 
 | Código | Indicador | Fonte | Papel |
 |---|---|---|---|
-| C1 | Índice Brasileiro de Conectividade (IBC) | Anatel, dez. 2022 | conectividade (oferta) |
+| C1 | Índice Brasileiro de Conectividade (IBC) | Anatel, edição 2022 | conectividade (oferta) |
 | C2 | Moradores em domicílios com Internet (%) | IBGE, Censo 2022 | conectividade (acesso) |
 | S1 | Abastecimento por rede geral de água (%) | IBGE, Censo 2022 | IIS, saneamento |
 | S2 | Esgotamento por rede ou fossa ligada à rede (%) | IBGE, Censo 2022 | IIS, saneamento |

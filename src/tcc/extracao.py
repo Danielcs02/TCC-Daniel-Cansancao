@@ -12,7 +12,7 @@ from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, ass
 
 from tcc import config
 from tcc.fontes import anatel, cnes, ibge, inep, sidra
-from tcc.fontes.download import baixar
+from tcc.fontes.download import baixar, sha256
 
 GRUPO = "extracao"
 
@@ -27,6 +27,17 @@ def _localidades_e_uf() -> tuple[pd.DataFrame, int | None]:
     sigla = config.escopo_uf()
     codigo_uf = ibge.codigo_da_uf(loc, sigla) if sigla else None
     return loc, codigo_uf
+
+
+def _obter(url: str, destino, pagina: str):
+    """Usa o arquivo já gravado ou baixa pelo link direto; se o download falhar,
+    explica como obter o arquivo à mão."""
+    try:
+        return baixar(url, destino)
+    except RuntimeError as erro:
+        raise FileNotFoundError(
+            f"Não foi possível baixar {url} ({erro}). Baixe o arquivo pelo navegador "
+            f"(página: {pagina}) e grave-o em {destino}.") from erro
 
 
 def _gravar(df: pd.DataFrame, nome: str) -> str:
@@ -76,21 +87,20 @@ def padronizado_censo(context: AssetExecutionContext) -> MaterializeResult:
 @asset(group_name=GRUPO, deps=[padronizado_dim_municipio],
        description="Inep, Indicadores Educacionais 2022: E1 e E2 -> fato_inep.csv")
 def padronizado_inep(context: AssetExecutionContext) -> MaterializeResult:
-    pasta = config.dir_bruto("inep")
-    faltando = [f"{i.arquivo}.zip" for i in inep.INDICADORES_INEP
-                if not (pasta / f"{i.arquivo}.zip").exists()]
-    if faltando:
-        raise FileNotFoundError(
-            f"Arquivos do Inep ausentes em {pasta}: {faltando}. Baixe-os em {inep.PAGINA} "
-            "(ver docs/fontes.md) e coloque-os nessa pasta.")
     uf = config.escopo_uf()
-    fato = pd.concat([inep.calcular_indicador(i, inep.ler_zip(pasta / f"{i.arquivo}.zip"), uf)
-                      for i in inep.INDICADORES_INEP], ignore_index=True)
+    partes, hashes = [], {}
+    for ind in inep.INDICADORES_INEP:
+        destino = config.dir_bruto("inep") / f"{ind.arquivo}.zip"
+        arquivo = _obter(inep.url_arquivo(ind), destino, inep.PAGINA)
+        hashes[arquivo.name] = sha256(arquivo)
+        partes.append(inep.calcular_indicador(ind, inep.ler_zip(arquivo), uf))
+    fato = pd.concat(partes, ignore_index=True)
     contagem = fato.groupby("codigo_indicador").size().to_dict()
     context.log.info(f"Municípios por indicador: {contagem}")
     return MaterializeResult(metadata={
         "municipios_por_indicador": MetadataValue.json(contagem),
         "arquivo": _gravar(fato, "fato_inep.csv"),
+        "sha256": MetadataValue.json(hashes),
     })
 
 
@@ -121,14 +131,13 @@ def padronizado_cnes(context: AssetExecutionContext) -> MaterializeResult:
 @asset(group_name=GRUPO, deps=[padronizado_dim_municipio],
        description="Anatel, IBC de 2022: C1 -> fato_anatel.csv")
 def padronizado_anatel(context: AssetExecutionContext) -> MaterializeResult:
-    caminho = config.dir_bruto("anatel") / anatel.ARQUIVO_ZIP
-    if not caminho.exists():
-        raise FileNotFoundError(
-            f"Arquivo do IBC ausente: {caminho}. Baixe-o em {anatel.PAGINA} "
-            "(ver docs/fontes.md) e grave-o com esse nome.")
+    destino = config.dir_bruto("anatel") / anatel.ARQUIVO_ZIP
+    caminho = _obter(anatel.URL, destino, anatel.PAGINA)
     fato = anatel.calcular_c1(anatel.ler_zip(caminho), config.escopo_uf())
     context.log.info(f"IBC 2022: {len(fato)} municípios")
     return MaterializeResult(metadata={
         "municipios": len(fato),
         "arquivo": _gravar(fato, "fato_anatel.csv"),
+        "sha256": sha256(caminho),
+        "fonte": MetadataValue.url(anatel.URL),
     })

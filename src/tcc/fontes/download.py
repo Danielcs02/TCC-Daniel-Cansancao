@@ -3,11 +3,20 @@
 from __future__ import annotations
 
 import gzip
+import hashlib
 import time
 import urllib.request
 from pathlib import Path
 
 AGENTE = "tcc-conectividade/0.1 (pesquisa academica)"
+
+
+def sha256(caminho: Path) -> str:
+    h = hashlib.sha256()
+    with open(caminho, "rb") as f:
+        for bloco in iter(lambda: f.read(1 << 20), b""):
+            h.update(bloco)
+    return h.hexdigest()
 
 
 def baixar(url: str, destino: Path, refazer: bool = False, tentativas: int = 3,

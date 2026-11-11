@@ -12,9 +12,10 @@ localização e dependência administrativa):
   percentual é de docências (o docente conta uma vez por turma e disciplina).
 
 Nos dois casos usa-se a linha com localização "Total" e dependência "Total".
-Os arquivos são baixados manualmente da página do Inep e colocados em
-``data/bruto/inep/`` (ver ``docs/fontes.md``). A integridade é conferida pelo
-MD5 que o próprio Inep inclui no arquivo compactado.
+Os arquivos ficam em ``data/bruto/inep/``: o pipeline tenta baixá-los pelo link
+direto e, se o servidor do Inep não responder, eles podem ser baixados à mão
+(ver ``docs/fontes.md``). A integridade é conferida pelo MD5 que o próprio Inep
+inclui no arquivo compactado.
 """
 
 from __future__ import annotations
@@ -31,6 +32,7 @@ from tcc import catalogo
 
 PAGINA = ("https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/"
           "indicadores-educacionais")
+URL_BASE = "https://download.inep.gov.br/informacoes_estatisticas/indicadores_educacionais/2022"
 
 SEM_VALOR = {"--", "-", ""}
 
@@ -46,6 +48,11 @@ INDICADORES_INEP: tuple[IndicadorInep, ...] = (
     IndicadorInep("E1", "TDI_2022_MUNICIPIOS", "FUN_CAT_0"),
     IndicadorInep("E2", "AFD_2022_MUNICIPIOS", "FUN_CAT_1"),
 )
+
+
+def url_arquivo(ind: IndicadorInep) -> str:
+    """Link direto do .zip (registrado a partir do download feito no navegador)."""
+    return f"{URL_BASE}/{ind.arquivo}.zip"
 
 
 class ArquivoCorrompido(ValueError):

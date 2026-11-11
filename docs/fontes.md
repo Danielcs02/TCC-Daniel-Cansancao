@@ -4,7 +4,7 @@ Todas as fontes são públicas e se referem a 2022, ano do Censo Demográfico. A
 
 | Código | Indicador | Fonte | Referência | Chave municipal | Status |
 |---|---|---|---|---|---|
-| C1 | Índice Brasileiro de Conectividade (IBC) | Anatel | 2022 | 7 dígitos | extraído (série 2021 a 2025, ano 2022) |
+| C1 | Índice Brasileiro de Conectividade (IBC) | Anatel | edição 2022 | 7 dígitos | extraído (série 2021 a 2025, ano 2022) |
 | C2 | Moradores em domicílios com acesso à Internet (%) | IBGE, Censo 2022 (amostra) | 2022 | 7 dígitos | extraído (SIDRA 9942) |
 | S1 | Moradores em domicílios abastecidos por rede geral de água (%) | IBGE, Censo 2022 (universo) | 2022 | 7 dígitos | extraído (SIDRA 6894) |
 | S2 | Moradores em domicílios com esgotamento por rede geral, pluvial ou fossa séptica ligada à rede (%) | IBGE, Censo 2022 (universo) | 2022 | 7 dígitos | extraído (SIDRA 7555) |
@@ -39,14 +39,19 @@ Observações:
 
 ## Arquivos do Inep usados
 
-Planilhas municipais dos Indicadores Educacionais de 2022, baixadas manualmente da página do Inep (o servidor de download não respondeu ao acesso automatizado) e colocadas em `data/bruto/inep/`. Obtidas em 11/11/2026. O código está em `src/tcc/fontes/inep.py`.
+Planilhas municipais dos Indicadores Educacionais de 2022, gravadas em `data/bruto/inep/`. Obtidas em 11/11/2026 pelo navegador; o pipeline tenta os mesmos links diretos quando o arquivo não está na pasta, mas o servidor do Inep recusou a conexão automatizada no teste (erro de SSL). O código está em `src/tcc/fontes/inep.py`.
 
 | Uso | Arquivo | Coluna | Linha usada | SHA-256 do .zip |
 |---|---|---|---|---|
 | E1 | `TDI_2022_MUNICIPIOS.zip` (Taxa de Distorção Idade-Série) | `FUN_CAT_0` (ensino fundamental, total) | localização Total, dependência Total | `30ca963d8accdcd7a3715e996e00720e872731d1e08491253d48304c6f263f0b` |
 | E2 | `AFD_2022_MUNICIPIOS.zip` (Adequação da Formação Docente) | `FUN_CAT_1` (ensino fundamental, total, grupo 1) | localização Total, dependência Total | `ef56287e590d9e7e9b5bf3762f0bf596422b62b9bd0d6f31a66518c880503032` |
 
-Páginas: https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/taxas-de-distorcao-idade-serie e https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/adequacao-da-formacao-docente. O link direto de cada arquivo ainda não foi registrado.
+Links diretos:
+
+- E1: https://download.inep.gov.br/informacoes_estatisticas/indicadores_educacionais/2022/TDI_2022_MUNICIPIOS.zip
+- E2: https://download.inep.gov.br/informacoes_estatisticas/indicadores_educacionais/2022/AFD_2022_MUNICIPIOS.zip
+
+Os links foram lidos do registro de origem que o Windows grava no arquivo baixado (`Zone.Identifier`), e os arquivos de origem têm o mesmo SHA-256 dos usados no pipeline. Páginas onde os links aparecem: https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/taxas-de-distorcao-idade-serie e https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/adequacao-da-formacao-docente.
 
 Observações:
 
@@ -76,11 +81,14 @@ Observações:
 - **Contagem zero.** O CNES lista todos os estabelecimentos ativos; município sem registro recebe zero, e não valor ausente.
 - **Leitura do .dbc.** Bibliotecas `pyreaddbc` (descompactação) e `dbfread` (leitura do DBF).
 
-**Conferência.** H1 conferido contra o TabNet (CNES, Estabelecimentos por Tipo, Rio de Janeiro, Dez/2022, tipos "posto de saúde" e "centro de saúde/unidade básica", por município): as contagens coincidem nos 92 municípios (2.175 no estado; 307 no município do Rio de Janeiro; 9 em Sumidouro). H2 ainda não foi conferido contra o TabNet. Valores: Rio de Janeiro, H1 0,49 e H2 4,79; Sumidouro, H1 5,92 e H2 2,89.
+**Conferência.** H1 conferido contra o TabNet (CNES, Estabelecimentos por Tipo, Rio de Janeiro, Dez/2022, tipos "posto de saúde" e "centro de saúde/unidade básica", por município): as contagens coincidem nos 92 municípios (2.175 no estado; 307 no município do Rio de Janeiro; 9 em Sumidouro). H2 conferido contra o TabNet (CNES, Recursos Humanos, Profissionais, Indivíduos, segundo CBO 2002, Rio de Janeiro, Dez/2022, todas as 72 categorias do filtro "Médicos", por município). Resultado:
+
+- **O TabNet põe cada médico em um único município.** A soma dos municípios é igual ao total do estado (47.480), e quem atua em mais de um município aparece em só um deles. O registro escolhido é o marcado com `CPFUNICO = 1` no arquivo PF. Aplicando essa mesma regra aos códigos do TabNet, a contagem coincide em 85 dos 92 municípios; nos outros 7 a diferença é de 1 a 35 médicos (no máximo 0,43%; Rio de Janeiro: 24.470 contra 24.435). Isso confirma a leitura do arquivo e a lista de códigos.
+- **O H2 do trabalho usa outra regra, de propósito:** o médico conta uma vez em cada município onde tem vínculo, porque o indicador mede a disponibilidade de médicos no município. Por isso os valores do H2 são maiores que os do TabNet, sobretudo em municípios pequenos atendidos por médicos que também trabalham em outros (Sumidouro: 44 no H2, 18 no TabNet; Rio de Janeiro: 29.772 no H2, 24.435 no TabNet). O texto do artigo deve explicar essa diferença. Valores: Rio de Janeiro, H1 0,49 e H2 4,79; Sumidouro, H1 5,92 e H2 2,89.
 
 ## Arquivo do IBC usado
 
-Arquivo .zip do conjunto "Meu Município: Índice Brasileiro de Conectividade" do Portal Brasileiro de Dados Abertos (https://dados.gov.br/dados/conjuntos-dados/meu-municipio---indice-brasileiro-de-conectividade), baixado manualmente (a página só funciona em navegador e a API do portal exige login) e gravado como `data/bruto/anatel/ibc.zip`. Obtido em 11/11/2026; arquivos internos datados de 23/04/2026 (edição IBC 2025). SHA-256 do .zip: `c7dfe5253357d1179a2f8ce907c8f0e7cd5c1bbcce59eeee6741326198ba1752`. O código está em `src/tcc/fontes/anatel.py`.
+Arquivo .zip do conjunto "Meu Município: Índice Brasileiro de Conectividade" do Portal Brasileiro de Dados Abertos (https://dados.gov.br/dados/conjuntos-dados/meu-municipio---indice-brasileiro-de-conectividade), gravado como `data/bruto/anatel/ibc.zip`. Link direto: https://www.anatel.gov.br/dadosabertos/paineis_de_dados/meu_municipio/ibc.zip (lido do registro de origem do download no Windows, `Zone.Identifier`, com SHA-256 igual ao do arquivo usado; o link responde a acesso automatizado, e o pipeline o usa quando o arquivo não está na pasta). A Anatel substitui o arquivo a cada edição, no mesmo endereço; por isso o pipeline não baixa de novo um arquivo já gravado, e o SHA-256 abaixo identifica a versão usada. Obtido em 11/11/2026; arquivos internos datados de 23/04/2026 (edição IBC 2025). SHA-256 do .zip: `c7dfe5253357d1179a2f8ce907c8f0e7cd5c1bbcce59eeee6741326198ba1752`. O código está em `src/tcc/fontes/anatel.py`.
 
 | Uso | Arquivo interno | Coluna | Filtro |
 |---|---|---|---|
@@ -95,7 +103,7 @@ O .zip traz também os indicadores originais (não normalizados) e as tabelas po
 
 Consequência para o trabalho: o C1 de 2022 segue a metodologia original. Como a normalização é feita dentro do próprio ano, o IBC de 2022 ordena os municípios entre si em 2022, que é o uso feito aqui (correlação de Spearman e quadrantes pela mediana); ele não deve ser comparado em nível com edições de 2024 em diante. O texto do artigo deve registrar isso.
 
-**Mês de referência.** O arquivo informa só o ano (2022). O artigo cita dados de dezembro de 2022; isso ainda precisa ser confirmado na documentação da Anatel.
+**Referência temporal.** O arquivo informa só o ano, sem mês de referência. Por isso o trabalho cita o C1 como "IBC, edição 2022", e não por mês.
 
 **Conferência.** A Anatel divulgou que Armação dos Búzios (RJ) teve o maior IBC do país em 2022 e em 2023 (https://www.gov.br/anatel/pt-br/assuntos/noticias/regioes-norte-e-centro-oeste-tem-os-maiores-aumentos-de-conectividade-em-2023). No arquivo, Armação dos Búzios (3300233) é o primeiro em 2022 (83,28) e em 2023 (81,94). Rio de Janeiro (3304557): 71,96; Sumidouro (3305703): 65,82.
 

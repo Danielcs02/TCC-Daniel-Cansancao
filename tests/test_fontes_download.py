@@ -35,3 +35,11 @@ def test_escopo_uf(monkeypatch, valor, esperado):
 def test_escopo_padrao_e_rj(monkeypatch):
     monkeypatch.delenv("TCC_UF", raising=False)
     assert config.escopo_uf() == "RJ"
+
+
+def test_sha256(tmp_path):
+    from tcc.fontes.download import sha256
+
+    arquivo = tmp_path / "a.txt"
+    arquivo.write_bytes(b"abc")
+    assert sha256(arquivo) == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
