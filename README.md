@@ -22,7 +22,7 @@ Em que medida o nível de conectividade dos municípios brasileiros acompanha a 
 
 | Código | Indicador | Fonte | Papel |
 |---|---|---|---|
-| C1 | Índice Brasileiro de Conectividade (IBC) | Anatel, dez. 2022 | conectividade (oferta) |
+| C1 | Índice Brasileiro de Conectividade (IBC) | Anatel, edição 2022 | conectividade (oferta) |
 | C2 | Moradores em domicílios com Internet (%) | IBGE, Censo 2022 | conectividade (acesso) |
 | S1 | Abastecimento por rede geral de água (%) | IBGE, Censo 2022 | IIS, saneamento |
 | S2 | Esgotamento por rede ou fossa ligada à rede (%) | IBGE, Censo 2022 | IIS, saneamento |
@@ -50,6 +50,9 @@ src/tcc/
   municipio.py    padronização do código IBGE (6 para 7 dígitos) e faixas de porte
   qualidade.py    regras de qualidade da tabela de fatos (Pandera)
   indice.py       normalização, IIS, análise de sensibilidade e quadrantes
+  config.py       pasta de dados e UF a extrair (variáveis de ambiente)
+  extracao.py     ativos da camada bruta (baixam as fontes e geram a camada padronizada)
+  fontes/         um módulo por fonte oficial (SIDRA/IBGE, Inep, CNES, Anatel)
   definitions.py  ativos e dependências do Dagster
 sql/              esquema do banco (modelo dimensional)
 docs/             fontes, decisões metodológicas e modelo de dados
@@ -85,7 +88,7 @@ dagster dev
 - [x] Catálogo de indicadores, esquema do banco e decisões metodológicas
 - [x] Módulo do índice (normalização, agregação, sensibilidade, quadrantes) com testes
 - [x] Regras de qualidade e padronização da chave municipal com testes
-- [ ] Prova de conceito: extração das quatro fontes para os 92 municípios do RJ
+- [x] Prova de conceito: extração das quatro fontes para os 92 municípios do RJ
 - [ ] Carga no PostgreSQL
 - [ ] Execução nacional (5.570 municípios)
 - [ ] Painel em Streamlit

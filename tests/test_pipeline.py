@@ -2,14 +2,17 @@
 
 import numpy as np
 import pandas as pd
-from dagster import materialize
+from dagster import AssetSelection, materialize
 
 from tcc import definitions
 
 
 def test_definicoes_carregam():
     nomes = {k.to_user_string() for a in definitions.ATIVOS for k in a.keys}
-    assert {"fato_indicador_municipal", "iis", "sensibilidade", "quadrantes"} <= nomes
+    assert {"fato_indicador_municipal", "iis", "sensibilidade", "quadrantes",
+            "padronizado_dim_municipio", "padronizado_censo",
+            "padronizado_inep", "padronizado_cnes",
+            "padronizado_anatel"} <= nomes
 
 
 def test_pipeline_ponta_a_ponta(tmp_path, monkeypatch, largo):
@@ -34,7 +37,8 @@ def test_pipeline_ponta_a_ponta(tmp_path, monkeypatch, largo):
     longo[~cnes].to_csv(pad / "fato_demais.csv", index=False)
 
     monkeypatch.setenv("TCC_DATA_DIR", str(tmp_path))
-    resultado = materialize(definitions.ATIVOS)
+    # só a camada analítica; os ativos de extração acessam a rede
+    resultado = materialize(definitions.ATIVOS, selection=AssetSelection.groups("tcc"))
     assert resultado.success
     iis = resultado.output_for_node("iis")
     assert len(iis) == len(largo) and iis["iis"].between(0, 1).all()
