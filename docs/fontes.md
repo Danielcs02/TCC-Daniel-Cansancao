@@ -8,8 +8,8 @@ Todas as fontes são públicas e se referem a 2022, ano do Censo Demográfico. A
 | C2 | Moradores em domicílios com acesso à Internet (%) | IBGE, Censo 2022 (amostra) | 2022 | 7 dígitos | extraído (SIDRA 9942) |
 | S1 | Moradores em domicílios abastecidos por rede geral de água (%) | IBGE, Censo 2022 (universo) | 2022 | 7 dígitos | extraído (SIDRA 6894) |
 | S2 | Moradores em domicílios com esgotamento por rede geral, pluvial ou fossa séptica ligada à rede (%) | IBGE, Censo 2022 (universo) | 2022 | 7 dígitos | extraído (SIDRA 7555) |
-| H1 | Unidades básicas de saúde por 10 mil habitantes | CNES (DATASUS) | competência dez. 2022 | 6 dígitos | a extrair |
-| H2 | Médicos com vínculo ativo por mil habitantes | CNES (DATASUS) | competência dez. 2022 | 6 dígitos | a extrair |
+| H1 | Unidades básicas de saúde por 10 mil habitantes | CNES (DATASUS) | competência dez. 2022 | 6 dígitos | extraído (ST, conferido no TabNet) |
+| H2 | Médicos com vínculo ativo por mil habitantes | CNES (DATASUS) | competência dez. 2022 | 6 dígitos | extraído (PF) |
 | E1 | Taxa de distorção idade-série no ensino fundamental (%) | Inep, Indicadores Educacionais | 2022 | 7 dígitos | extraído (TDI 2022) |
 | E2 | Docentes do ensino fundamental com formação adequada (%) | Inep, Indicadores Educacionais | 2022 | 7 dígitos | extraído (AFD 2022) |
 
@@ -55,6 +55,28 @@ Observações:
 - **E2 é percentual de docências.** Pela nota da planilha, o docente é contado uma vez em cada turma e disciplina que leciona, e o grupo 1 reúne docentes com licenciatura (ou bacharelado com complementação pedagógica) na mesma área da disciplina. O texto do artigo deve descrever o indicador assim. Nota técnica citada na planilha: https://download.inep.gov.br/informacoes_estatisticas/indicadores_educacionais/2021/SEI_INEP_0644683_Nota_Tecnica.pdf
 
 **Conferência.** Rio de Janeiro (3304557): E1 11,0%, E2 62,0%. Sumidouro (3305703): E1 23,0%, E2 36,8%.
+
+## Arquivos do CNES usados
+
+Arquivos mensais do FTP do DATASUS, competência dezembro de 2022, um por UF (exemplo do RJ: `STRJ2212.dbc` e `PFRJ2212.dbc`). Acesso em 11/11/2026. O código está em `src/tcc/fontes/cnes.py`.
+
+- Estabelecimentos (ST): ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Dados/ST/
+- Profissionais (PF): ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Dados/PF/
+- Tabelas auxiliares do TabNet (`TAB_CNES.zip`, com `TP_ESTAB.CNV` e `medico02.CNV`): ftp://ftp.datasus.gov.br/dissemin/publicos/CNES/200508_/Auxiliar/
+
+| Indicador | Arquivo | Regra |
+|---|---|---|
+| H1 | ST | estabelecimentos com `TP_UNID` 01 (posto de saúde) ou 02 (centro de saúde/unidade básica), segundo `TP_ESTAB.CNV`; por 10 mil habitantes |
+| H2 | PF | profissionais distintos (pelo CNS; na falta, pelo CPF codificado) com CBO iniciado em 225 ou 2231, por município do estabelecimento; por mil habitantes |
+
+Observações:
+
+- **CBO de médico.** O subgrupo 225 da CBO 2002 reúne os médicos; os códigos 2231 são da versão anterior e continuam em uso no SUS (por exemplo, 2231F9, médico residente). O agrupamento "Médicos" do TabNet (`medico02.CNV`, 130 códigos) está inteiramente contido nessa regra. No RJ, a regra acrescenta dois códigos que a tabela do TabNet não lista: 225355 (médico radiologista intervencionista, 145 vínculos) e 225154 (1 vínculo), de um total de 109.929 vínculos de médicos.
+- **Uma vez por município.** O arquivo PF tem um registro por vínculo. O médico com vários vínculos no mesmo município conta uma vez; quem atua em dois municípios conta nos dois. No RJ: 109.929 vínculos e 48.610 médicos distintos.
+- **Contagem zero.** O CNES lista todos os estabelecimentos ativos; município sem registro recebe zero, e não valor ausente.
+- **Leitura do .dbc.** Bibliotecas `pyreaddbc` (descompactação) e `dbfread` (leitura do DBF).
+
+**Conferência.** H1 conferido contra o TabNet (CNES, Estabelecimentos por Tipo, Rio de Janeiro, Dez/2022, tipos "posto de saúde" e "centro de saúde/unidade básica", por município): as contagens coincidem nos 92 municípios (2.175 no estado; 307 no município do Rio de Janeiro; 9 em Sumidouro). H2 ainda não foi conferido contra o TabNet. Valores: Rio de Janeiro, H1 0,49 e H2 4,79; Sumidouro, H1 5,92 e H2 2,89.
 
 ## Onde encontrar
 

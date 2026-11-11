@@ -12,7 +12,7 @@ fonte oficial e geram os arquivos de ``data/padronizado`` (formato em
 ``data/README.md``), que os ativos abaixo leem:
 
     padronizado_dim_municipio -> dim_municipio
-    padronizado_censo, padronizado_inep -> fato_indicador_municipal
+    padronizado_censo, padronizado_inep, padronizado_cnes -> fato_indicador_municipal
 
 Execute com ``dagster dev`` na raiz do repositório.
 """
@@ -49,7 +49,8 @@ def dim_municipio(context: AssetExecutionContext) -> pd.DataFrame:
     return df
 
 
-@asset(group_name=GRUPO, deps=[extracao.padronizado_censo, extracao.padronizado_inep],
+@asset(group_name=GRUPO, deps=[extracao.padronizado_censo, extracao.padronizado_inep,
+             extracao.padronizado_cnes],
        description="Tabela de fatos no formato longo, validada.")
 def fato_indicador_municipal(context: AssetExecutionContext, dim_municipio: pd.DataFrame,
                              dim_indicador: pd.DataFrame) -> pd.DataFrame:

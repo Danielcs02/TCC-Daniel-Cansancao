@@ -11,7 +11,7 @@ import pandas as pd
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
 from tcc import config
-from tcc.fontes import ibge, inep, sidra
+from tcc.fontes import cnes, ibge, inep, sidra
 from tcc.fontes.download import baixar
 
 GRUPO = "extracao"
@@ -91,4 +91,28 @@ def padronizado_inep(context: AssetExecutionContext) -> MaterializeResult:
     return MaterializeResult(metadata={
         "municipios_por_indicador": MetadataValue.json(contagem),
         "arquivo": _gravar(fato, "fato_inep.csv"),
+    })
+
+
+@asset(group_name=GRUPO, deps=[padronizado_dim_municipio],
+       description="CNES, competência dez. 2022: H1 (UBS) e H2 (médicos) -> fato_cnes.csv")
+def padronizado_cnes(context: AssetExecutionContext) -> MaterializeResult:
+    dim = pd.read_csv(config.dir_padronizado() / "dim_municipio.csv",
+                      dtype={"codigo_municipio": str})
+    ubs, medicos, urls = [], [], []
+    for uf in sorted(dim["uf"].unique()):
+        arquivos = {}
+        for grupo in ("ST", "PF"):
+            url = cnes.url_arquivo(grupo, uf)
+            arquivos[grupo] = baixar(url, config.dir_bruto("cnes") / cnes.nome_arquivo(grupo, uf))
+            urls.append(url)
+        ubs.append(cnes.contar_ubs(cnes.ler_dbc(arquivos["ST"], cnes.COLUNAS_ST)))
+        medicos.append(cnes.contar_medicos(cnes.ler_dbc(arquivos["PF"], cnes.COLUNAS_PF)))
+        context.log.info(f"{uf}: {int(ubs[-1].sum())} UBS, {int(medicos[-1].sum())} médicos")
+    fato = cnes.calcular_indicadores(pd.concat(ubs), pd.concat(medicos), dim)
+    return MaterializeResult(metadata={
+        "ubs": int(sum(s.sum() for s in ubs)),
+        "medicos_municipio": int(sum(s.sum() for s in medicos)),
+        "arquivo": _gravar(fato, "fato_cnes.csv"),
+        "fontes": MetadataValue.json(urls),
     })
